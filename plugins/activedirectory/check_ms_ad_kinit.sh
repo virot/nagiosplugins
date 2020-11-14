@@ -1,18 +1,42 @@
 #!/bin/bash
 
-function cleanup {
-  if [ -x $KRB5CCNAME ]; then
-    rm $KRB5CCNAME
-  fi
+while getopts "p:r:s:u:" opt; do
+    case "$opt" in
+        p )
+            password=$OPTARG
+            ;;
+        r )
+            realm=$OPTARG
+            ;;
+        s )
+            server=$OPTARG
+            ;;
+        u )
+            user=$OPTARG
+            ;;
+    esac
+done
 
-  if [ -x $KRB5_CONFIG ]; then
-    rm $KRB5_CONFIG
-  fi
+if [ -z "$user" ] || [ -z "$password" ] || [ -z "$server" ]; then
+    echo "UNKNOWN - Missing Argument - check_ms_ad_kinit -u <user> -p <password> -s <server>"
+    return 3
+fi
+
+if [ -z "$realm"]; then
+    realm=${user/*@/}
+fi
+
+function cleanup {
+    if [ -x $KRB5CCNAME ]; then
+        rm $KRB5CCNAME
+    fi
+    if [ -x $KRB5_CONFIG ]; then
+        rm $KRB5_CONFIG
+    fi
 }
 
 trap cleanup EXIT
 
-realm=${user/*@/}
 export KRB5_CONFIG=/tmp/krb5_$RANDOM.conf
 export KRB5CCNAME=/tmp/krb5_CC_$RANDOM
 
@@ -43,3 +67,4 @@ else
     echo "UNKNOWN - kinit returned: $retvalue, $result"
     return 3
 fi
+                                                                                                                                                                                                                                                                                                                         ~                                                                                                                                                                                                                                                                                                                            ~                                                                                                                                                                                                                                                                                                                            ~                                                                             
