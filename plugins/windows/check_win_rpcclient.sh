@@ -1,6 +1,6 @@
 #!/bin/bash
 
-while getopts "p:r:s:u:" opt; do
+while getopts "p:s:u:v:" opt; do
     case "$opt" in
         s )
             server=$OPTARG
@@ -11,6 +11,9 @@ while getopts "p:r:s:u:" opt; do
         p )
             password=$OPTARG
             ;;
+	v )
+            verbose=$OPTARG
+	    ;;
     esac
 done
 
@@ -32,6 +35,12 @@ else
   retvalue=$?
 fi
 
+    if [ ! -z "$verbose" ] && [ $verbose -gt 0 ]; then
+        echo "REALM: $realm"
+        echo "Server: $server"
+        echo "User: $user"
+        echo "Password: $password"
+    fi
 result=$(sed -e "1d" <<< "$resultpre")
 
 if [ "$retvalue" -eq "0" ]; then
